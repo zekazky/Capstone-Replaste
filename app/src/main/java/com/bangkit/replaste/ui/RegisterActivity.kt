@@ -1,11 +1,19 @@
-package com.bangkit.replaste
+package com.bangkit.replaste.ui
 
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bangkit.replaste.R
+import com.bangkit.replaste.api.ApiClient
+import com.bangkit.replaste.api.AuthResponse
+import com.bangkit.replaste.api.RegisterRequest
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -31,7 +39,10 @@ class RegisterActivity : AppCompatActivity() {
         // Set click listeners
         registerButton.setOnClickListener {
             if (validateInputs()) {
-                performRegister()
+                val email = emailEditText.text.toString().trim()
+                val password = passwordEditText.text.toString()
+                val name = nameEditText.text.toString().trim()
+                registerUser(email, password, name)
             }
         }
 
@@ -80,8 +91,28 @@ class RegisterActivity : AppCompatActivity() {
         return true
     }
 
-    private fun performRegister() {
-        // Implement your registration logic here
-        // This might involve API calls or database operations
+    private fun registerUser(email: String, password: String, fullName: String) {
+        val registerRequest = RegisterRequest(email, password, fullName)
+
+        ApiClient.authService.register(registerRequest).enqueue(object : Callback<AuthResponse> {
+            override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@RegisterActivity,
+                        "Registrasi berhasil!",
+                        Toast.LENGTH_SHORT).show()
+                    finish() // Kembali ke halaman login
+                } else {
+                    Toast.makeText(this@RegisterActivity,
+                        "Registrasi gagal: ${response.message()}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+                Toast.makeText(this@RegisterActivity,
+                    "Error: ${t.message}",
+                    Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
