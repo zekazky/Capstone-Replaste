@@ -65,4 +65,7 @@ dependencies {
     implementation("androidx.camera:camera-camera2:${cameraxVersion}")
     implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
     implementation("androidx.camera:camera-view:${cameraxVersion}")
+
+    implementation ("androidx.core:core-ktx:1.12.0")
+    implementation ("com.google.android.material:material:1.11.0")
 }
